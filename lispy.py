@@ -60,6 +60,7 @@ def atom(token):
 # This will likely get moved to it's own module
 def eval(x, env=global_env):
     """Evaluate an expression in an environment"""
+    #print "(DEBUG: %s )" % (x, )
     if isinstance(x, Symbol):
         # variable reference: http://www.schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.1
         return env.find(x)[x]
@@ -82,6 +83,17 @@ def eval(x, env=global_env):
         (_, var, expression) = x
         env.find(var)[var] = eval(expression, env)
         return
+    elif x[0] == 'lambda':
+        # lambda procedure: http://www.schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.4
+        (_, params, body) = x
+        return Procedure(params, body, env)
+    elif x[0] == 'load':
+        # my own special form, though mit-scheme has it, so it probably is defined
+        (_, filename) = x
+        with open(filename, 'r') as f:
+            eval(parse(f.read().replace('\n','')))
+        return
+
     else:
         # procedure call: http://www.schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.1.3
         proc = eval(x[0], env)

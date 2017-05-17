@@ -11,6 +11,7 @@ def standard_env():
     env.update({
         '+': op.add, '-': op.sub, '*':op.mul, '/': op.div,
         '>': op.gt, '<': op.lt, '>=': op.ge, '<=': op.le, '=': op.eq,
+        'begin':    lambda *x: x[-1],
     })
     return env
 
