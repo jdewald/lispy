@@ -9,9 +9,11 @@ def standard_env():
     env.update(vars(math))  # gives us sin, cos, sqrt, pi
 
     env.update({
-        '+': op.add, '-': op.sub, '*':op.mul, '/': op.div,
+        '+': op.add, '-': op.sub, '*':op.mul, '/': op.truediv,
         '>': op.gt, '<': op.lt, '>=': op.ge, '<=': op.le, '=': op.eq,
         'begin':    lambda *x: x[-1],
+        'or': op.or_,
+        'even?':    lambda x: x % 2 == 0
     })
     return env
 

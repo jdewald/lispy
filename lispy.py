@@ -170,11 +170,11 @@ def eval(x, env=global_env):
         #   (define f (lambda (params) expr)
         _ = x[0]
         var = x[1]
-        exp = x[2]
+        exp = x[2:] if len(x) > 3 else x[2]
         print "(DEBUG: \tvar is %s" % (type(var), )
         if isinstance(var, List):
-            print "(DEBUG: switching to lambda)"
-            return eval([x[0],
+            print "(DEBUG: \tswitching to lambda)"
+            return eval([_,
                  var[0], [_lambda, var[1:], exp]], env)
         else:
             env[var] = eval(exp, env)
@@ -223,9 +223,18 @@ class Procedure(object):
     """
     def __init__(self, params, body, env):
         self.params, self.body, self.env = params, body, env
+        # A procedure can actually be a set of Internal Definitions
+        # followed by the actual body. Here we aren't actually validating
+        # that but assuming that an array will be valid
+        if not isinstance(self.body[0], List):
+            self.body = [self.body]
 
     def __call__(self, *args):
-        return eval(self.body, Env(self.params, args, self.env))
+        env = Env(self.params, args, self.env)
+        ret = None
+        for body in self.body:
+            ret = eval(body, env)
+        return ret
 
 if __name__ == "__main__":
     main()
